@@ -46,5 +46,5 @@
   "devDependencies": {
     "gh-pages": "^6.0.0"
   },
-  "homepage": "/golf-analyzer"
+  "homepage": "https://hampusadamsson.github.io/golf-analyzer/"
 }
