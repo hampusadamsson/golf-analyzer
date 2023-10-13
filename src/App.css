@@ -24,7 +24,19 @@ p {
 
 .cold {
   color: cadetblue;
-  height: 35px;
+  height: 15px;
+}
+
+
+.plot {
+  width: 75%;
+}
+
+.container-plot {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: row;
 }
 
 .table {
@@ -41,10 +53,34 @@ p {
   box-shadow: 0px -5px 10px 0px rgba(0, 0, 0, 0.5);
 }
 
+.cont2 {
+  padding: 20px;
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.5);
+}
+
+.between {
+  display: flex;
+  flex-direction: row;
+}
+
+.gray {
+  color: rgba(142, 142, 142, 0.8);
+  border-radius: 10px;
+}
+
+.shots {
+  padding-top: 10px;
+  background-color: rgba(142, 142, 142, 0.2);
+}
+
+.icon {
+  width: 100px;
+}
+
 .clubs {
   width: 100px;
   /* border: solid 1px; */
-  margin: 4px;
+  margin: 2px;
   display: flex;
   flex-direction: column;
 }
