@@ -1,15 +1,16 @@
 {
   "files": {
-    "main.css": "/golf-analyzer/static/css/main.95c58628.css",
-    "main.js": "/golf-analyzer/static/js/main.e251e1a5.js",
+    "main.css": "/golf-analyzer/static/css/main.7da47ba5.css",
+    "main.js": "/golf-analyzer/static/js/main.c134ea3d.js",
     "static/js/787.79f09058.chunk.js": "/golf-analyzer/static/js/787.79f09058.chunk.js",
+    "static/media/icon.png": "/golf-analyzer/static/media/icon.84c0861a66148cd36f8b.png",
     "index.html": "/golf-analyzer/index.html",
-    "main.95c58628.css.map": "/golf-analyzer/static/css/main.95c58628.css.map",
-    "main.e251e1a5.js.map": "/golf-analyzer/static/js/main.e251e1a5.js.map",
+    "main.7da47ba5.css.map": "/golf-analyzer/static/css/main.7da47ba5.css.map",
+    "main.c134ea3d.js.map": "/golf-analyzer/static/js/main.c134ea3d.js.map",
     "787.79f09058.chunk.js.map": "/golf-analyzer/static/js/787.79f09058.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.95c58628.css",
-    "static/js/main.e251e1a5.js"
+    "static/css/main.7da47ba5.css",
+    "static/js/main.c134ea3d.js"
   ]
 }
