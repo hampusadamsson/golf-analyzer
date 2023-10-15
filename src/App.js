@@ -198,9 +198,15 @@ function Clubb(props) {
   var tourData = tour.find(v => v.Club === props.club);
   // console.log(tour);
   // console.log(tourData);
+
+  // const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+
   return (
     < div className='cont2'>
-      <Collapsible trigger={props.club} open="true" className='shots'>
+      <div className='clubsymbol'>
+        <b>{props.club.substring(0, 1)}</b>
+      </div>
+      <Collapsible trigger={props.club} open="true">
         <div className="container">
           <Metric data={tourData} name={"Carry (m)"} avg={thisClub.map(x => x[6])} />
           <Metric data={tourData} name={"Total (m)"} avg={thisClub.map(x => x[7])} />
@@ -212,7 +218,7 @@ function Clubb(props) {
           <Metric data={tourData} name={"Spin (rpm)"} avg={thisClub.map(x => x[21])} />
           <Metric data={tourData} name={"Apex (m)"} avg={thisClub.map(x => x[11])} />
           {/* <Metric data={props.data} name={"Land-Angle (deg)"} /> */}
-          <Collapsible trigger="Shots" className='gray'>
+          <Collapsible trigger="Shots" className='select'>
             <div className='table'>
               {<table>
                 <thead>
@@ -237,12 +243,13 @@ function Clubb(props) {
             </div>
           </Collapsible>
         </div >
+        <p>{thisClub.length} shots</p>
       </Collapsible>
     </div >
   );
 }
 
-
+var avgOrTot = "Average";
 
 function App() {
 
@@ -275,6 +282,22 @@ function App() {
     },
   };
 
+  function avg(array) {
+    var total = 0;
+    var count = 0;
+    array.forEach(function (item) {
+      total += parseFloat(item);
+      count++;
+    });
+    return total / count;
+  }
+
+  function std(array) {
+    const n = array.length
+    const mean = array.reduce((a, b) => parseFloat(a) + parseFloat(b)) / n
+    return Math.log2(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n) ** 2
+  }
+
 
   //State to store table Column name
   const [tableRows, setTableRows] = useState([]);
@@ -282,22 +305,42 @@ function App() {
   //State to store the values
   const [values, setValues] = useState([]);
 
+  const [dataPlot, setDataPlot] = useState([]);
+
   var clubs = new Set(values.map(v => v[1]).filter(v => v !== ""));
 
-  var data = {
-    datasets:
-      Array.from(clubs.values()).map(club => {
-        var group = values.filter(v => v[1] === club)
-        return {
-          label: club,
-          borderWidth: 2,
-          data: group.map(v => ({
-            x: v[15],
-            y: v[6],
-          })),
-        }
+  function getShots() {
+    return Array.from(clubs.values()).map(club => {
+      var group = values.filter(v => v[1] === club)
+      return {
+        label: club,
+        data: group.map(v => ({
+          x: v[15],
+          y: v[6],
+          pointStyle: "circle",
+        })),
+        pointRadius: 3,
+      }
+    });
+  }
+
+  function getAverageShots() {
+    return Array.from(clubs.values()).map(club => {
+      var group = values.filter(v => v[1] === club);
+      var xStd = std(group.map(v => v[15]));
+      var xAvg = avg(group.map(v => v[15]));
+      var yAvg = avg(group.map(v => v[6]));
+      return ({
+        label: club,
+        data: [{
+          x: xAvg,
+          y: yAvg,
+        }],
+        pointRadius: xStd,
+        pointStyle: "circle",
       })
-  };
+    })
+  }
 
   const changeHandler = (event) => {
     // Passing file data (event.target.files[0]) to parse using Papa.parse
@@ -318,11 +361,20 @@ function App() {
         setTableRows(rowsArray[0]);
 
         // Filtered Values
-        setValues(valuesArray);
+        setValues(valuesArray, setDataPlot({
+          datasets: getShots(),
+        }));
       },
     });
   };
 
+  function handleClick() {
+    // Changing state
+    avgOrTot = avgOrTot === "All shots" ? "Average" : "All shots";
+    setDataPlot({
+      datasets: avgOrTot === "All shots" ? getShots() : getAverageShots(),
+    });
+  }
 
   return (
     <div className="App">
@@ -345,15 +397,18 @@ function App() {
       <div className='container-plot'>
         <div className='plot'>
           {values.length === 0 ? "" : <Scatter
+            redraw="true"
             height={750}
             options={options}
-            data={data}
+            data={dataPlot}
           />}
         </div>
       </div>
+      <button onClick={handleClick}>{avgOrTot}</button>
 
-      {Array.from(new Set(values.map(v => v[1]).filter(v => v !== ""))).map(x => <Clubb key={x} club={x} data={values} tableRows={tableRows} />)}
-
+      <div className='holder'>
+        {Array.from(new Set(values.map(v => v[1]).filter(v => v !== ""))).map(x => <Clubb key={x} club={x} data={values} tableRows={tableRows} />)}
+      </div>
       {/* {tour.map(x => <Clubb key={x.Club} data={x} values={values} tableRows={tableRows} />)} */}
     </div>
   );
