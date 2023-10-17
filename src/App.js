@@ -7,6 +7,8 @@ import Collapsible from 'react-collapsible';
 import {
   Chart as ChartJS,
   LinearScale,
+  CategoryScale,
+  BarElement,
   PointElement,
   LineElement,
   Tooltip,
@@ -14,9 +16,9 @@ import {
   Legend,
   Colors,
 } from 'chart.js';
-import { Scatter } from 'react-chartjs-2';
+import { Scatter, Bar } from 'react-chartjs-2';
 
-ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend, Filler, Colors)
+ChartJS.register(LinearScale, PointElement, LineElement, Tooltip, Legend, Filler, Colors, CategoryScale, BarElement)
 
 
 
@@ -253,6 +255,10 @@ var avgOrTot = "Average";
 
 function App() {
 
+  const optionsBar = {
+    indexAxis: 'y',
+  }
+
   const options = {
     plugins: {
       legend: {
@@ -292,6 +298,12 @@ function App() {
     return total / count;
   }
 
+  function median(arr) {
+    const mid = Math.floor(arr.length / 2);
+    const sortedArr = arr.sort((a, b) => a - b);
+    return sortedArr[mid];
+  }
+
   function std(array) {
     const n = array.length
     const mean = array.reduce((a, b) => parseFloat(a) + parseFloat(b)) / n
@@ -308,6 +320,19 @@ function App() {
   const [dataPlot, setDataPlot] = useState([]);
 
   var clubs = new Set(values.map(v => v[1]).filter(v => v !== ""));
+
+  var dataBar = {
+    labels: Array.from(clubs),
+    datasets: [
+      {
+        label: "Carry Distance AVG",
+        data: Array.from(clubs).map(c => avg(values.filter(v => v[1] === c).map(v => v[6]))),
+      },
+      {
+        label: "Carry Distance MEDIAN",
+        data: Array.from(clubs).map(c => median(values.filter(v => v[1] === c).map(v => v[6]))),
+      }]
+  };
 
   function getShots() {
     return Array.from(clubs.values()).map(club => {
@@ -378,16 +403,21 @@ function App() {
 
   return (
     <div className="App">
-      <div>Golf analysis</div>
+      <div>
+        <h1>
+          GOLF ANALYSIS
+        </h1>
+      </div>
       <img src={icon} alt="golf analysis" className='icon' />
       <div>
         {/* File Uploader */}
         <input
+          className='button'
           type="file"
           name="file"
           onChange={changeHandler}
           accept=".csv"
-          style={{ display: "block", margin: "10px auto" }}
+        // style={{ display: "none" }}
         />
         <br />
         <br />
@@ -404,12 +434,31 @@ function App() {
           />}
         </div>
       </div>
-      <button onClick={handleClick}>{avgOrTot}</button>
+      {values.length === 0 ? "" :
+        <button
+          className='button'
+          onClick={handleClick}
+        >{avgOrTot}</button>
+      }
 
       <div className='holder'>
         {Array.from(new Set(values.map(v => v[1]).filter(v => v !== ""))).map(x => <Clubb key={x} club={x} data={values} tableRows={tableRows} />)}
       </div>
       {/* {tour.map(x => <Clubb key={x.Club} data={x} values={values} tableRows={tableRows} />)} */}
+
+      <div className='container-plot'>
+        <div className='plot'>
+          {values.length === 0 ? "" :
+            <Bar
+              redraw="true"
+              height={300}
+              options={optionsBar}
+              data={dataBar}
+            />}
+        </div>
+      </div>
+
+
     </div>
   );
 }
